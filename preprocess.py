@@ -14,9 +14,17 @@ def preproc(fname, folder):
 	resized = cv2.resize(image, (imsize, imsize))
 	gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
 	cv2.imshow("image", gray)
-	cv2.imwrite("./dataset/cat/%s" % os.path.basename(fname) ,gray)
+	cv2.imwrite("./dataset/%s/%s" % (folder ,os.path.basename(fname)) ,gray)
 
 pathlib.Path("./dataset/cat").mkdir(parents=True, exist_ok=True)
 
+print("Cats")
+
 for fname in glob.glob("./PetImages/Cat/*.jpg"):
 	preproc(fname, "cat")
+
+print("Dogs")
+
+for fname in glob.glob("./PetImages/Dog/*.jpg"):
+	preproc(fname, "dog")
+
