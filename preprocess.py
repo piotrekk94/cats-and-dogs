@@ -17,6 +17,7 @@ def preproc(fname, folder):
 	cv2.imwrite("./dataset/%s/%s" % (folder ,os.path.basename(fname)) ,gray)
 
 pathlib.Path("./dataset/cat").mkdir(parents=True, exist_ok=True)
+pathlib.Path("./dataset/dog").mkdir(parents=True, exist_ok=True)
 
 print("Cats")
 
