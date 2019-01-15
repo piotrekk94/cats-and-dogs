@@ -106,3 +106,6 @@ venv.bak/
 PetImages/
 
 .idea/
+
+model.json
+model.h5
