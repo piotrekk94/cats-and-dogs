@@ -72,36 +72,46 @@ num_classes = 2
 
 model = keras.Sequential()
 
-model.add(keras.layers.Conv2D(16, kernel_size=(3, 3),
+kernel_size = 2
+pool_size = 2
+
+model.add(keras.layers.Conv2D(50, kernel_size=kernel_size,
                               strides=1,
                               activation='relu',
-                              input_shape=input_shape))
-model.add(keras.layers.BatchNormalization())
-model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-model.add(keras.layers.Dropout(0.6))
+                              padding='same'))
+model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
 
-model.add(keras.layers.Conv2D(16, (3, 3), strides=1, activation='relu'))
-model.add(keras.layers.BatchNormalization())
-model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Conv2D(70, kernel_size=kernel_size,
+                              strides=1,
+                              activation='relu',
+                              padding='same'))
+model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
 
-model.add(keras.layers.Conv2D(16, (5, 5), strides=1, activation='relu'))
-model.add(keras.layers.BatchNormalization())
+model.add(keras.layers.Conv2D(90, kernel_size=kernel_size,
+                              strides=1,
+                              activation='relu',
+                              padding='same'))
+model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
+
+model.add(keras.layers.Conv2D(120, kernel_size=kernel_size,
+                              strides=1,
+                              activation='relu',
+                              padding='same'))
+model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
+
 model.add(keras.layers.Dropout(0.2))
-
-model.add(keras.layers.Conv2D(32, (5, 5), strides=1, activation='relu'))
-model.add(keras.layers.BatchNormalization())
-model.add(keras.layers.Dropout(0.1))
-
-model.add(keras.layers.BatchNormalization())
 model.add(keras.layers.Flatten())
-model.add(keras.layers.Dense(256, activation='relu'))
-model.add(keras.layers.Dense(num_classes, activation='sigmoid'))
+model.add(keras.layers.Dense(200, activation='relu'))
+model.add(keras.layers.Dropout(0.2))
+model.add(keras.layers.Dense(2, activation='sigmoid'))
 
-model.compile(optimizer=tf.train.AdamOptimizer(),
-              loss='sparse_categorical_crossentropy',
+model.compile(optimizer='adam',
+              loss='binary_crossentropy',
               metrics=['accuracy'])
-history = model.fit(train_images, train_labels, epochs=5, shuffle=True)
+
+history = model.fit(train_images, train_labels, epochs=20, shuffle=True)
+
+model.summary()
 
 test_loss, test_acc = model.evaluate(test_images, test_labels)
 
