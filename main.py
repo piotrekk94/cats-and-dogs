@@ -28,24 +28,26 @@ def plot_history(history):
     for l in loss_list:
         plt.plot(epochs, history.history[l], 'b', label='Training loss (' + str(str(format(history.history[l][-1],'.5f'))+')'))
     for l in val_loss_list:
-        plt.plot(epochs, history.history[l], 'g', label='Validation loss (' + str(str(format(history.history[l][-1],'.5f'))+')'))
+        plt.plot(epochs, history.history[l], 'r', label='Validation loss (' + str(str(format(history.history[l][-1],'.5f'))+')'))
 
     plt.title('Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
+    plt.savefig('loss.jpg')
 
     ## Accuracy
     plt.figure(2)
     for l in acc_list:
         plt.plot(epochs, history.history[l], 'b', label='Training accuracy (' + str(format(history.history[l][-1],'.5f'))+')')
     for l in val_acc_list:
-        plt.plot(epochs, history.history[l], 'g', label='Validation accuracy (' + str(format(history.history[l][-1],'.5f'))+')')
+        plt.plot(epochs, history.history[l], 'r', label='Validation accuracy (' + str(format(history.history[l][-1],'.5f'))+')')
 
     plt.title('Accuracy')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
+    plt.savefig('accuracy.jpg')
     plt.show()
 
 
@@ -126,10 +128,10 @@ fs.close()
 if float(fs_acc) < float(test_acc):
     # serialize model to JSON
     model_json = model.to_json()
-    with open("model.json", "w") as json_file:
+    with open(str(int(test_acc*100)) + "_model.json", "w") as json_file:
         json_file.write(model_json)
     # serialize weights to HDF5
-    model.save_weights("model.h5")
+    model.save_weights(str(int(test_acc*100)) + "_model.h5")
     print("Saved model to disk")
     new_acc = open('accuracy.dat', 'w')
     new_acc.write(str(test_acc))

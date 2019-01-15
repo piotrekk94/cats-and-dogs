@@ -109,3 +109,6 @@ PetImages/
 
 model.json
 model.h5
+accuracy.jpg
+loss.jpg
+grid.jpg
