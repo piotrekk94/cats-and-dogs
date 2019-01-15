@@ -1,0 +1,2 @@
+To run load_model: `python load_model.py models/jkow/72_model`
+where: `models/jkow/72_model.json` and `models/jkow/72_model.h5` are saved models
