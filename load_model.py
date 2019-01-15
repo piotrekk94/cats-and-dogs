@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.models import model_from_json
 
 def generate_grid(imgs):
-    w = 8
-    h = 8
+    w = 4
+    h = 4
     n = w*h
     margin = 20
     img_h, img_w, img_c = imgs[0][0].shape
@@ -46,13 +46,16 @@ def generate_grid(imgs):
 dog_files = np.asarray([cv2.imread(i) for i in glob.glob("dataset/dog/*.jpg")])
 cat_files = np.asarray([cv2.imread(i) for i in glob.glob("dataset/cat/*.jpg")])
 
+final_dog_files = np.asarray([cv2.imread(i) for i in glob.glob("dataset/final-boss/dog/*.jpg")])
+final_cat_files = np.asarray([cv2.imread(i) for i in glob.glob("dataset/final-boss/cat/*.jpg")])
+
 test_dog = dog_files[1000:3000]
 test_cat = cat_files[1000:3000]
 
 test_images = np.concatenate((test_dog, test_cat), axis=0)
 test_labels = np.concatenate((np.asarray([1 for i in test_dog]), np.asarray([0 for i in test_cat])), axis=0)
 
-to_predict = np.concatenate((dog_files[0:50], cat_files[0:50]), axis=0)
+final_test_images = np.concatenate((final_dog_files, final_cat_files), axis=0)
 
 # 1st arg of this script is a path to json model
 json_arg = str(sys.argv[1])
@@ -67,7 +70,8 @@ loaded_model.load_weights(json_arg + ".h5")
 print("Loaded model from disk")
 
 # evaluate loaded model on test data
-loaded_model.compile(optimizer=tf.train.AdamOptimizer(),
+loaded_model.compile(optimizer='adam',
+              #loss='binary_crossentropy',
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
@@ -76,11 +80,11 @@ test_loss, test_acc = loaded_model.evaluate(test_images, test_labels)
 print('Test accuracy:', test_acc)
 
 # Prediction tests
-preds = loaded_model.predict(to_predict)
+preds = loaded_model.predict(final_test_images)
 
 processed_list = list()
 font = cv2.FONT_HERSHEY_SIMPLEX
-for (i, j) in zip(preds, to_predict):
+for (i, j) in zip(preds, final_test_images):
     if i[0] > i[1]:
         cv2.putText(j,'CAT',(2,15), font, 0.5,(0,0,0), 2)
         data = (j, 'CAT')
