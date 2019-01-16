@@ -108,38 +108,32 @@ model = keras.Sequential()
 kernel_size = 3
 pool_size = 2
 
-model.add(keras.layers.Conv2D(10, kernel_size=kernel_size,
+model.add(keras.layers.Conv2D(16, kernel_size=(4, 4),
                               strides=1,
                               activation='relu',
                               input_shape=input_shape))
+model.add(keras.layers.Dense(32, activation='relu'))
 model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
-model.add(keras.layers.Dropout(0.25))
+model.add(keras.layers.Dropout(0.1))
 
-model.add(keras.layers.Conv2D(20, kernel_size=kernel_size,
+model.add(keras.layers.Conv2D(32, kernel_size=kernel_size,
                               strides=1,
                               activation='relu',
                               input_shape=input_shape))
+model.add(keras.layers.Dense(64, activation='relu'))
 model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
 model.add(keras.layers.Dropout(0.25))
 
-model.add(keras.layers.Conv2D(30, kernel_size=kernel_size,
+model.add(keras.layers.Conv2D(64, kernel_size=(2, 2),
                               strides=1,
                               activation='relu',
                               input_shape=input_shape))
+model.add(keras.layers.Dense(128, activation='relu'))
 model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
-model.add(keras.layers.Dropout(0.25))
-
-model.add(keras.layers.Conv2D(50, kernel_size=kernel_size,
-                              strides=1,
-                              activation='relu',
-                              input_shape=input_shape))
-model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
-model.add(keras.layers.Dropout(0.25))
-
 
 model.add(keras.layers.Flatten())
-model.add(keras.layers.Dense(300, activation='relu'))
-model.add(keras.layers.Dense(num_classes, activation='softmax'))
+model.add(keras.layers.Dense(16, activation='relu'))
+model.add(keras.layers.Dense(num_classes, activation='sigmoid'))
 
 model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',

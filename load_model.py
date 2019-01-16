@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.models import model_from_json
 
 def generate_grid(imgs):
-    w = 4
-    h = 4
+    w = 6
+    h = 6
     n = w*h
     margin = 20
     img_h, img_w, img_c = imgs[0][0].shape
@@ -46,16 +46,15 @@ def generate_grid(imgs):
 dog_files = np.asarray([cv2.imread(i) for i in glob.glob("dataset/dog/*.jpg")])
 cat_files = np.asarray([cv2.imread(i) for i in glob.glob("dataset/cat/*.jpg")])
 
-final_dog_files = np.asarray([cv2.imread(i) for i in glob.glob("dataset/final-boss/dog/*.jpg")])
-final_cat_files = np.asarray([cv2.imread(i) for i in glob.glob("dataset/final-boss/cat/*.jpg")])
+final_dog_files = dog_files[40:58] #np.asarray([cv2.imread(i) for i in glob.glob("dataset/final-boss/dog/*.jpg")])
+final_cat_files = cat_files[4:22] #np.asarray([cv2.imread(i) for i in glob.glob("dataset/final-boss/cat/*.jpg")])
+final_test_images = np.concatenate((final_dog_files, final_cat_files), axis=0)
 
 test_dog = dog_files[1000:3000]
 test_cat = cat_files[1000:3000]
 
 test_images = np.concatenate((test_dog, test_cat), axis=0)
 test_labels = np.concatenate((np.asarray([1 for i in test_dog]), np.asarray([0 for i in test_cat])), axis=0)
-
-final_test_images = np.concatenate((final_dog_files, final_cat_files), axis=0)
 
 # 1st arg of this script is a path to json model
 json_arg = str(sys.argv[1])
