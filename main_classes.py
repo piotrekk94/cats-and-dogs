@@ -4,11 +4,42 @@ from tensorflow import keras
 import numpy as np
 
 from PIL import Image
+import itertools
 import glob
 import cv2
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import model_from_json
 
+def generate_grid(imgs):
+    w = 6
+    h = 6
+    n = w*h
+    margin = 20
+    img_h, img_w, img_c = imgs[0][0].shape
+
+    #Define the margins in x and y directions
+    m_x = margin
+    m_y = margin
+
+    #Size of the full size image
+    mat_x = img_w * w + m_x * (w - 1)
+    mat_y = img_h * h + m_y * (h - 1)
+
+    #Create a matrix of zeros of the right size and fill with 255 (so margins end up white)
+    imgmatrix = np.zeros((mat_y, mat_x, img_c),np.uint8)
+    imgmatrix.fill(255)
+
+    #Prepare an iterable with the right dimensions
+    positions = itertools.product(range(h), range(w))
+
+    for (y_i, x_i), img in zip(positions, imgs):
+        x = x_i * (img_w + m_x)
+        y = y_i * (img_h + m_y)
+        imgmatrix[y:y+img_h, x:x+img_w, :] = img[0]
+
+    resized = cv2.resize(imgmatrix, (mat_x//3,mat_y//3), interpolation = cv2.INTER_AREA)
+    compression_params = [cv2.IMWRITE_JPEG_QUALITY, 90]
+    cv2.imwrite('grid.jpg', imgmatrix, compression_params)
 
 def plot_history(history):
     loss_list = [s for s in history.history.keys() if 'loss' in s and 'val' not in s]
@@ -74,36 +105,41 @@ num_classes = 2
 
 model = keras.Sequential()
 
-kernel_size = 2
+kernel_size = 3
 pool_size = 2
+
+model.add(keras.layers.Conv2D(10, kernel_size=kernel_size,
+                              strides=1,
+                              activation='relu',
+                              input_shape=input_shape))
+model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
+model.add(keras.layers.Dropout(0.25))
+
+model.add(keras.layers.Conv2D(20, kernel_size=kernel_size,
+                              strides=1,
+                              activation='relu',
+                              input_shape=input_shape))
+model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
+model.add(keras.layers.Dropout(0.25))
+
+model.add(keras.layers.Conv2D(30, kernel_size=kernel_size,
+                              strides=1,
+                              activation='relu',
+                              input_shape=input_shape))
+model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
+model.add(keras.layers.Dropout(0.25))
 
 model.add(keras.layers.Conv2D(50, kernel_size=kernel_size,
                               strides=1,
                               activation='relu',
                               input_shape=input_shape))
 model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
+model.add(keras.layers.Dropout(0.25))
 
-model.add(keras.layers.Conv2D(70, kernel_size=kernel_size,
-                              strides=1,
-                              activation='relu',
-                              input_shape=input_shape))
-model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
-
-model.add(keras.layers.Conv2D(90, kernel_size=kernel_size,
-                              strides=1,
-                              activation='relu',
-                              input_shape=input_shape))
-model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
-
-model.add(keras.layers.Conv2D(120, kernel_size=kernel_size,
-                              strides=1,
-                              activation='relu',
-                              input_shape=input_shape))
-model.add(keras.layers.MaxPooling2D(pool_size=pool_size))
 
 model.add(keras.layers.Flatten())
-model.add(keras.layers.Dense(256, activation='relu'))
-model.add(keras.layers.Dense(num_classes, activation='sigmoid'))
+model.add(keras.layers.Dense(300, activation='relu'))
+model.add(keras.layers.Dense(num_classes, activation='softmax'))
 
 model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
@@ -137,3 +173,23 @@ if float(fs_acc) < float(test_acc):
 
 # Some plots from training
 plot_history(history)
+
+final_dog_files = dog_files[40:58] #np.asarray([cv2.imread(i) for i in glob.glob("dataset/final-boss/dog/*.jpg")])
+final_cat_files = cat_files[4:22] #np.asarray([cv2.imread(i) for i in glob.glob("dataset/final-boss/cat/*.jpg")])
+final_test_images = np.concatenate((final_dog_files, final_cat_files), axis=0)
+
+# Prediction tests
+preds = model.predict(final_test_images)
+
+processed_list = list()
+font = cv2.FONT_HERSHEY_SIMPLEX
+for (i, j) in zip(preds, final_test_images):
+    if i[0] > i[1]:
+        cv2.putText(j,'CAT',(2,15), font, 0.5,(0,0,0), 2)
+        data = (j, 'CAT')
+    else:
+        cv2.putText(j,'DOG',(2,15), font, 0.5,(0,0,0), 2)
+        data = (j, 'DOG')
+    processed_list.append(data)
+
+generate_grid(processed_list)
